@@ -197,4 +197,4 @@ document.getElementById('start').addEventListener('click',function(){
     /*
     */
     if(!running) gameLoop();
-});
+}); 

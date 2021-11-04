@@ -1,87 +1,95 @@
 
 var rectangles = { };
-var scoreCounter = 0;
-var level = 1;
+var running = false;
 
-console
 
+
+
+const socket = new WebSocket('ws://localhost:8082')
+socket.addEventListener('open', (event) => {
+    console.log(event)
+})
+
+socket.addEventListener('message', (event) => {
+    console.log("MSG ROM SERVER" + event.data )
+})
 
 function initSpace() {
 
-        console.log("Vytvaram prostredie...")
-        var canvasToHTML = document.createElement("canvas");
-        canvasToHTML.id = "myCanvas";
-        canvasToHTML.setAttribute("width",528);
-        canvasToHTML.setAttribute("height",528);
-    
-    document.getElementById("space").appendChild(canvasToHTML);
-    document.getElementsByTagName("TABLE")[0].remove();
-    
-    
-    var alien = document.createElement("img");
-    alien.id = "alien";
-    alien.src = "https://cdn.pixabay.com/photo/2020/12/25/00/41/alien-5858427_1280.png";
-    document.getElementById("space").appendChild(alien);
-    
-    var stone = document.createElement("img");
-    stone.id = "stone";
-    stone.src = "https://www.goodfreephotos.com/albums/vector-images/grey-stone-rock-vector-clipart.png";
-    document.getElementById("space").appendChild(stone);
-    
-    var rocket = document.createElement("img");
-    rocket.id = "rocket";
-    rocket.src = "https://freesvg.org/img/rocket-297573.png";
-    document.getElementById("space").appendChild(rocket);
-    
-    var stone = document.createElement("img");
-    stone.id = "winner";
-    stone.src = "https://www.pngrepo.com/png/123399/512/winner-trophy-for-the-best.png";
-    document.getElementById("space").appendChild(stone);
-    
-    var stone = document.createElement("img");
-    stone.id = "loose";
-    stone.src = "https://cdn.pixabay.com/photo/2020/10/31/17/31/sad-5701778_1280.png";
-    document.getElementById("space").appendChild(stone);
-    
-    var audio = document.createElement("audio");
-    audio.id = "music";
-    audio.style = "none";
-    audio.src = "https://ia800908.us.archive.org/14/items/OnorezdiLP014/EXILE%20-%20SLUM%20VILLAGE%20%28PROD%20THEDEEPR%20EDIT%29%20-%20TIME%20HAS%20COME.mp3";
-    document.getElementById("space").appendChild(audio);
-    
-    var button = document.createElement("button");
-    button.innerHTML = "MUSIC";
-    button.id = "musicBtn";
-    var body = document.getElementsByTagName("body")[0];
-    body.appendChild(button);
-    
-    var button = document.createElement("button");
-    button.innerHTML = "RESET";
-    button.id = "resetBtn";
-    var body = document.getElementsByTagName("body")[0];
-    body.appendChild(button);
-    
-    var score = document.createElement("h2");
-    score.innerHTML =  "Score: 0" ; 
-    score.id = "score";
-    var body = document.getElementsByTagName("body")[0];
-    body.appendChild(score);
-    
-    
-    var score = document.createElement("h2");
-    score.innerHTML =  "Aktualny level: " ; 
-    score.id = "level";
-    var body = document.getElementsByTagName("body")[0];
-    body.appendChild(score);
-    
-    
-    
-    //hide IMG 
-    var images = document.getElementsByTagName('img');
-    for (i = 0; i < images.length;i++ ) {
-        images[i].style.display = "none";
-    }
-    
+    console.log("Vytvaram prostredie...")
+    var canvasToHTML = document.createElement("canvas");
+    canvasToHTML.id = "myCanvas";
+    canvasToHTML.setAttribute("width",528);
+    canvasToHTML.setAttribute("height",528);
+
+document.getElementById("space").appendChild(canvasToHTML);
+document.getElementsByTagName("TABLE")[0].remove();
+
+
+var alien = document.createElement("img");
+alien.id = "alien";
+alien.src = "https://cdn.pixabay.com/photo/2020/12/25/00/41/alien-5858427_1280.png";
+document.getElementById("space").appendChild(alien);
+
+var stone = document.createElement("img");
+stone.id = "stone";
+stone.src = "https://www.goodfreephotos.com/albums/vector-images/grey-stone-rock-vector-clipart.png";
+document.getElementById("space").appendChild(stone);
+
+var rocket = document.createElement("img");
+rocket.id = "rocket";
+rocket.src = "https://freesvg.org/img/rocket-297573.png";
+document.getElementById("space").appendChild(rocket);
+
+var stone = document.createElement("img");
+stone.id = "winner";
+stone.src = "https://www.pngrepo.com/png/123399/512/winner-trophy-for-the-best.png";
+document.getElementById("space").appendChild(stone);
+
+var stone = document.createElement("img");
+stone.id = "loose";
+stone.src = "https://cdn.pixabay.com/photo/2020/10/31/17/31/sad-5701778_1280.png";
+document.getElementById("space").appendChild(stone);
+
+var audio = document.createElement("audio");
+audio.id = "music";
+audio.style = "none";
+audio.src = "https://ia800908.us.archive.org/14/items/OnorezdiLP014/EXILE%20-%20SLUM%20VILLAGE%20%28PROD%20THEDEEPR%20EDIT%29%20-%20TIME%20HAS%20COME.mp3";
+document.getElementById("space").appendChild(audio);
+
+var button = document.createElement("button");
+button.innerHTML = "MUSIC";
+button.id = "musicBtn";
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(button);
+
+var button = document.createElement("button");
+button.innerHTML = "RESET";
+button.id = "resetBtn";
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(button);
+
+var score = document.createElement("h2");
+score.innerHTML =  "Score: 0" ; 
+score.id = "score";
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(score);
+
+
+var score = document.createElement("h2");
+score.innerHTML =  "Aktualny level: " ; 
+score.id = "level";
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(score);
+
+
+
+//hide IMG 
+var images = document.getElementsByTagName('img');
+for (i = 0; i < images.length;i++ ) {
+    images[i].style.display = "none";
+}
+
 var c = document.getElementById("myCanvas");
 var ctx = c.getContext("2d");
 var counter = 0;
@@ -89,25 +97,26 @@ var x,y;
 
 
 for(var i = 0; i < 11; i++) {
-    for(var j = 0; j < 11; j++) {
-        x = j * 48;
-        y = i * 48;
-        ctx.beginPath();
-        ctx.rect(x, y, 48, 48);
-        ctx.strokeStyle = "black"
-        ctx.lineWidth = 3;
-        ctx.fillStyle = "#202020";
-        ctx.textAlign = "center";
-        ctx.stroke();
-        ctx.fill();
-        ctx.fillStyle = "white";
-        ctx.fillText(counter , x + 25 , y + 28 );
-        rectangles[counter] = {x: x, y: y};
-        //console.log(rectangles[counter]);
-        counter++;
-        }
+for(var j = 0; j < 11; j++) {
+    x = j * 48;
+    y = i * 48;
+    ctx.beginPath();
+    ctx.rect(x, y, 48, 48);
+    ctx.strokeStyle = "black"
+    ctx.lineWidth = 3;
+    ctx.fillStyle = "#202020";
+    ctx.textAlign = "center";
+    ctx.stroke();
+    ctx.fill();
+    ctx.fillStyle = "white";
+    ctx.fillText(counter , x + 25 , y + 28 );
+    rectangles[counter] = {x: x, y: y};
+   //console.log(rectangles[counter]);
+    counter++;
     }
 }
+}
+
 initSpace();
 
 
@@ -160,7 +169,6 @@ function drawAliens() {
 
     }
 }
-
 
 function drawShip() {
     var c = document.getElementById("myCanvas");
@@ -225,43 +233,6 @@ function drawMissiles() {
     }
 }
 
-function checkKey(e) {
-    e = e || window.event;
-    if (e.keyCode == '37' || e.keyCode == '71' ) {
-        if(ship[0] > 100) {
-            var i=0;
-            for(i=0;i<ship.length;i++) {
-                ship[i]--;
-            }
-        }
-    }
-    else if ((e.keyCode == '39' || e.keyCode == '74' )  && ship[0] < 108) {
-        var i=0;
-        for(i=0;i<ship.length;i++) {
-            ship[i]++;
-        }
-    }
-    else if (e.keyCode == '32') {
-        missiles.push(ship[0]-11);
-    }
-}
-
-function checkCollisionsMA() {
-    for(var i=0;i<missiles.length;i++) {
-        if(aliens.includes(missiles[i])) {
-            var alienIndex = aliens.indexOf(missiles[i]);
-            aliens.splice(alienIndex, 1);
-            missiles.splice(i, 1);
-            console.log("+10 SCORE");
-            scoreCounter+= 10;
-            var score = document.getElementById("score");
-            score.innerHTML = "Score: " + scoreCounter;
-            
-
-        }
-    }
-}
-
 function loose() {
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
@@ -311,8 +282,6 @@ function win() {
     ctx.fill();
 }
 
-
-
 function gameLoop() {
     console.log('gameloop');
     running = true;
@@ -334,16 +303,7 @@ function gameLoop() {
             },1000);
         }
     },speed/2);
- 
-    window.loop1 = loop1;
-    window.loop2 = loop2;
-
-    
-  
 }
-
-
-
 
 document.getElementById('start').addEventListener('keydown',function(e){
     e.preventDefault();
