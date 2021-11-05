@@ -24,6 +24,7 @@ const gameLoopMove = function gameLoopMove(websocket,user) {
         //console.log(object);         
     })
     
+    object.game_status.next_level = false;
 
     var a = 0;    
     var loop1 = setInterval(function(){
@@ -41,16 +42,25 @@ const gameLoopMove = function gameLoopMove(websocket,user) {
             clearInterval(loop1);
 
         }
-        if(aliens.length === 0) {
+        if(object.game_status.aliens.length === 0) {
+
+            console.log("0 ALIENS WIN")
             //clearInterval(loop2);
+
+            object.game_status.next_level = true;
             clearInterval(loop1);
-            document.removeEventListener('keydown',checkKey);
-            missiles = [];
+            
+            object.game_status.missiles = [];
             //drawMissiles();
             //win();
+            //setTimeout(function(){
+                //nextLevel();
+            //},1000);
+            //websocket.send(JSON.stringify(object))
             setTimeout(function(){
                 nextLevel();
-            },1000);
+            },100);
+            
         }
 
 
@@ -108,6 +118,24 @@ function lowerAliens() {
     for(i=0;i<object.game_status.aliens.length;i++) {
         object.game_status.aliens[i]+=11;
     }
+}
+
+function nextLevel() {
+    object.game_status.level++;
+    console.log('level: '+ object.game_status.level);
+    if(object.game_status.level==1) object.game_status.aliens = [1,3,5,7,9,23,25,27,29,31];
+    if(object.game_status.level==2) object.game_status.aliens = [1,3,5,7,9,13,15,17,19,23,25,27,29,31];
+    if(object.game_status.level==3) object.game_status.aliens = [1,5,9,23,27,31];
+    if(object.game_status.level==4) object.game_status.aliens = [45,53];
+    if(object.game_status.level > 4) {
+        object.game_status.level = 1;
+        object.game_status.aliens = [1,3,5,7,9,23,25,27,29,31];
+        object.game_status.speed = object.game_status.speed / 2;
+    }
+
+    object.game_status.running = false;
+    object.game_status.game_over = false;
+    gameLoopMove(websocket_global,object);
 }
 
 var movesOn = function movesOn(move){

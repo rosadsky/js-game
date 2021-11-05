@@ -31,6 +31,7 @@ let user = [{
             missiles: [],
             aliens : [1,3,5,7,9,23,25,27,29,31],
             game_over: false,
+            next_level: false,
             score: 0,
             level: 1
         }

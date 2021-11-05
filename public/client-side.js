@@ -15,6 +15,7 @@ var aliens = [1,3,5,7,9,23,25,27,29,31] ;
 var game_over = false;
 var scoreCounter = 0;
 var level = 1;
+var next_level = false;
 
 //FE websocket 
 const socket = new WebSocket('ws://localhost:8082');
@@ -38,6 +39,7 @@ socket.addEventListener('message', (event) => {
         game_over = object.game_status.game_over;  
         scoreCounter = object.game_status.score;   
         level = object.game_status.level;  
+        next_level = object.game_status.next_level;
 })
 
 
@@ -334,8 +336,20 @@ function gameLoop() {
             missiles = [];
             loose();
             drawMissiles();
-            running = false;
+            //running = false;
+            //game_over = false;
             document.removeEventListener('keydown',checkKey);
+        }
+
+        if(next_level){
+            console.log("SOM V NEXT LEVEL")
+            clearInterval(loop2);
+            document.removeEventListener('keydown',checkKey);
+            drawMissiles();
+            win();
+            //setTimeout(function(){
+                gameLoop();
+            //},1000);
         }
 
 
@@ -348,6 +362,8 @@ function gameLoop() {
 
         
     },speed/2);
+
+    
 
 }
 /*
