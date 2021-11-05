@@ -29,7 +29,10 @@ let user = [{
             ship: [104,114,115,116],
             direction: 1,
             missiles: [],
-            aliens : [1,3,5,7,9,23,25,27,29,31]
+            aliens : [1,3,5,7,9,23,25,27,29,31],
+            game_over: false,
+            score: 0,
+            level: 1
         }
     }
 ]

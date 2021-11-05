@@ -12,6 +12,9 @@ var ship = [104,114,115,116] ;
 var direction;
 var missiles = [];
 var aliens = [1,3,5,7,9,23,25,27,29,31] ;
+var game_over = false;
+var scoreCounter = 0;
+var level = 1;
 
 //FE websocket 
 const socket = new WebSocket('ws://localhost:8082');
@@ -31,7 +34,10 @@ socket.addEventListener('message', (event) => {
         ship = object.game_status.ship;
         direction = object.game_status.direction;
         missiles = object.game_status.missiles;
-        aliens = object.game_status.aliens;       
+        aliens = object.game_status.aliens;
+        game_over = object.game_status.game_over;  
+        scoreCounter = object.game_status.score;   
+        level = object.game_status.level;  
 })
 
 
@@ -322,17 +328,25 @@ function gameLoop() {
         drawAliens();
         drawMissiles();
         drawShip();
-        if(aliens.length === 0) {
+
+        if(game_over) {
             clearInterval(loop2);
-            clearInterval(loop1);
-            document.removeEventListener('keydown',checkKey);
             missiles = [];
+            loose();
             drawMissiles();
-            win();
-            setTimeout(function(){
-                nextLevel();
-            },1000);
+            running = false;
+            document.removeEventListener('keydown',checkKey);
         }
+
+
+        
+        var score = document.getElementById("score");
+        score.innerHTML = "Score: " + scoreCounter.toString();
+
+        var levelPrint = document.getElementById("level");
+        levelPrint.innerHTML = "Aktualny level: " + level;
+
+        
     },speed/2);
 
 }

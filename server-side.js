@@ -34,14 +34,28 @@ const gameLoopMove = function gameLoopMove(websocket,user) {
         moveMissiles();
         checkCollisionsMA();
         if(a%4==3) lowerAliens();
-        //if(RaketaKolidujeSVotrelcom(user)) {
+        if(RaketaKolidujeSVotrelcom()) {
+            console.log("colission")
+            object.game_status.game_over = true;
+            websocket.send(JSON.stringify(object))
+            clearInterval(loop1);
+
+        }
+        if(aliens.length === 0) {
             //clearInterval(loop2);
-            //clearInterval(loop1);
-            //document.removeEventListener('keydown',checkKey);
-        //    missiles = [];
-          //  drawMissiles();
-            //loose();
-       // }
+            clearInterval(loop1);
+            document.removeEventListener('keydown',checkKey);
+            missiles = [];
+            //drawMissiles();
+            //win();
+            setTimeout(function(){
+                nextLevel();
+            },1000);
+        }
+
+
+
+
         a++;
 
         websocket.send(JSON.stringify(object))
@@ -58,11 +72,7 @@ function checkCollisionsMA() {
             object.game_status.aliens.splice(alienIndex, 1);
             object.game_status.missiles.splice(i, 1);
             console.log("+10 SCORE");
-            //scoreCounter+= 10;
-            //var score = document.getElementById("score");
-            //score.innerHTML = "Score: " + scoreCounter;
-            
-
+            object.game_status.score += 10;
         }
     }
 }
@@ -103,37 +113,7 @@ function lowerAliens() {
 var movesOn = function movesOn(move){
     console.log("move on func")
     console.log(typeof(move))
-    /*
-    if(move == "left"){
-        console.log("lefted")
-        if(object.game_status.ship[0] > 100) {
-            var i=0;
-            for(i=0;i<object.game_status.ship.length;i++) {
-                object.game_status.ship[i]--;
-            }
-            return true
-
-    }
-    
-    if(move == "right"){
-        console.log("righted")
-        var i=0;
-        for(i=0;i<object.game_status.ship.length;i++) {
-            object.game_status.ship[i]++;
-        }
-        return true
-    } 
-    
-    if (move == "fire") {
-        console.log("fored")
-        //object.game_status.missiles.push(object.game_status.ship[0]-11);
-        console.log(object.game_status.missiles);
-        return true
-    }
-
-    }
-    */
-
+  
     switch(move) {
         case "left":
             console.log("lets go left")
@@ -156,6 +136,7 @@ var movesOn = function movesOn(move){
             return true
     }
     websocket_global.send(JSON.stringify(object))
+    return false
     
 }
 module.exports = { gameLoopMove, movesOn }
