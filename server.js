@@ -32,6 +32,7 @@ let user = [{
             aliens : [1,3,5,7,9,23,25,27,29,31],
             game_over: false,
             next_level: false,
+            reset_game: false,
             score: 0,
             level: 1
         }
@@ -62,8 +63,9 @@ app.get("/start-game", (req, res) =>{
     serverSide.gameLoopMove(websocket,user[0]);
 })
 
-app.get("/reset-game", (req, res) =>{
+app.post("/reset-game", (req, res) =>{
     console.log("get request to reset game")
+    serverSide.resetGame();
 })
 
 app.post('/moves', (req,res) => {

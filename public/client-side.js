@@ -386,20 +386,11 @@ document.getElementById('musicBtn').addEventListener('click', () =>{
 
 document.getElementById('resetBtn').addEventListener('click', () =>{
 
-    clearInterval(window.loop1);
-    clearInterval(window.loop2);
-
-    console.log("restart level");
-    aliens = [1,3,5,7,9,23,25,27,29,31];
-    missiles = [];
-    speed = 512;
-    ship = [104,114,115,116];
-    scoreCounter = 0;
-    level = 1;
-    window.scoreCounter = 0;
-    document.getElementById('score').innerHTML = "Score: " +scoreCounter;
-
-    gameLoop()
+    fetch(`http://localhost:8080/reset-game`, {
+            method: 'POST'
+        }).catch(err => {
+            console.error(err)
+        })
 
 })
 /*
