@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 8060
+const port = 8080
 const fs = require('fs');
 const path = require('path');
 const { send } = require('process');
@@ -62,7 +62,14 @@ app.get("/reset-game", (req, res) =>{
     console.log("get request to reset game")
 })
 
-app.post('/moves', (req,res))
+app.post('/moves', (req,res) => {
+    console.log("MOVES FIRED POST")
+    console.log(req.query.move)
+    if(serverSide.movesOn(req.query.move.toString())){
+        res.status("200").send("ok").end()
+    }
+    //serverSide.movesOn(req.query.move,user )
+})
 
 
 

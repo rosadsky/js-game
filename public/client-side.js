@@ -1,18 +1,46 @@
+//import 'server-side.js'
 
 var rectangles = { };
 var running = false;
 
 
 
+//zmeniť
 
-const socket = new WebSocket('ws://localhost:8082')
+var speed ;
+var ship = [104,114,115,116] ;
+var direction;
+var missiles = [];
+var aliens = [1,3,5,7,9,23,25,27,29,31] ;
+
+//FE websocket 
+const socket = new WebSocket('ws://localhost:8082');
+
 socket.addEventListener('open', (event) => {
-    console.log(event)
+    console.log("Connected to the server side")
 })
+
+// DOSTANEM MESSAGE
+var object = {}
 
 socket.addEventListener('message', (event) => {
-    console.log("MSG ROM SERVER" + event.data )
+        console.log("UPDATE")
+        object = JSON.parse(event.data);
+        console.log(object);
+        speed = object.game_status.speed;
+        ship = object.game_status.ship;
+        direction = object.game_status.direction;
+        missiles = object.game_status.missiles;
+        aliens = object.game_status.aliens;       
 })
+
+
+document.getElementById('start').addEventListener('click',function(){
+    fetch('/start-game').then(console.log("fetch to start game"));
+    //gameLoop()
+    if(!running) gameLoop();
+});
+
 
 function initSpace() {
 
@@ -284,9 +312,12 @@ function win() {
 
 function gameLoop() {
     console.log('gameloop');
+       
     running = true;
+    document.addEventListener('keydown',checkKey);
     
     var loop2 = setInterval(function(){
+
         drawSpace();
         drawAliens();
         drawMissiles();
@@ -303,13 +334,14 @@ function gameLoop() {
             },1000);
         }
     },speed/2);
-}
 
+}
+/*
 document.getElementById('start').addEventListener('keydown',function(e){
     e.preventDefault();
     e.stopPropagation();
 });
-
+*/
 document.getElementById('musicBtn').addEventListener('click', () =>{
     var audio = document.getElementById('music');
 
@@ -340,9 +372,59 @@ document.getElementById('resetBtn').addEventListener('click', () =>{
     gameLoop()
 
 })
+/*
+function checkKey(e) {
+    e = e || window.event;
+    if (e.keyCode == '37' || e.keyCode == '71' ) {
+        if(ship[0] > 100) {
+            var i=0;
+            for(i=0;i<ship.length;i++) {
+                ship[i]--;
+            }
+        }
+    }
+    else if ((e.keyCode == '39' || e.keyCode == '74' )  && ship[0] < 108) {
+        var i=0;
+        for(i=0;i<ship.length;i++) {
+            ship[i]++;
+        }
+    }
+    else if (e.keyCode == '32') {
+        missiles.push(ship[0]-11);
+    }
+}
+*/
 
-document.getElementById('start').addEventListener('click',function(){
-    /*
-    */
-    if(!running) gameLoop();
-});
+function checkKey(e) {
+    e = e || window.event;
+    if (e.keyCode == '37' || e.keyCode == '71' ) {
+        console.log("CLICKED")
+        fetch(`http://localhost:8080/moves?move=${"left"}`, {
+            method: 'POST'
+        }).catch(err => {
+            console.error(err)
+        })
+
+    }
+    else if ((e.keyCode == '39' || e.keyCode == '74' )  && object.game_status.ship[0] < 108) {
+        fetch(`http://localhost:8080/moves?move=${"right"}`, {
+            method: 'POST'
+        }).catch(err => {
+            console.error(err)
+        })
+
+    }
+    else if (e.keyCode == '32') {
+        fetch(`http://localhost:8080/moves?move=${"fire"}`, {
+            method: 'POST'
+        }).catch(err => {
+            console.error(err)
+        })
+        
+    }
+}
+
+
+
+
+
