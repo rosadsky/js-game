@@ -25,6 +25,7 @@ const gameLoopMove = function gameLoopMove(websocket,user) {
     })
     
     object.game_status.next_level = false;
+    object.game_status.reset_game = false;
 
     var a = 0;    
     var loop1 = setInterval(function(){
@@ -43,24 +44,18 @@ const gameLoopMove = function gameLoopMove(websocket,user) {
 
         }
         if(object.game_status.aliens.length === 0) {
-
             console.log("0 ALIENS WIN")
-            //clearInterval(loop2);
-
             object.game_status.next_level = true;
-            clearInterval(loop1);
-            
+            clearInterval(loop1);   
             object.game_status.missiles = [];
-            //drawMissiles();
-            //win();
-            //setTimeout(function(){
-                //nextLevel();
-            //},1000);
-            //websocket.send(JSON.stringify(object))
             setTimeout(function(){
                 nextLevel();
             },100);
-            
+        }
+
+        if(object.game_status.reset_game){
+            console.log("CLEAR INTERVAL AFTER RESET")
+            clearInterval(loop1);
         }
 
 
@@ -170,20 +165,23 @@ var movesOn = function movesOn(move){
 
 
 var resetGame = function resetGame(){
-    clearInterval(window.loop1);
-    clearInterval(window.loop2);
+
+    object.game_status.resetGame = true;
+    //clearInterval(window.loop1);
+    //clearInterval(window.loop1);
 
     console.log("restart level");
-    aliens = [1,3,5,7,9,23,25,27,29,31];
-    missiles = [];
-    speed = 512;
-    ship = [104,114,115,116];
-    scoreCounter = 0;
-    level = 1;
-    window.scoreCounter = 0;
-    document.getElementById('score').innerHTML = "Score: " +scoreCounter;
-
-    gameLoop()
+    object.game_status.aliens = [1,3,5,7,9,23,25,27,29,31];
+    object.game_status.missiles = [];
+    object.game_status.speed = 512;
+    object.game_status.ship = [104,114,115,116];
+    object.game_status.score = 0;
+    object.game_status.level = 1;
+    //window.scoreCounter = 0;
+    //document.getElementById('score').innerHTML = "Score: " +scoreCounter;
+    setTimeout(function(){
+        gameLoopMove(websocket_global,object);
+    },100);
 }
 
 module.exports = { gameLoopMove, movesOn, resetGame }

@@ -16,6 +16,7 @@ var game_over = false;
 var scoreCounter = 0;
 var level = 1;
 var next_level = false;
+var reset_game = false;
 
 //FE websocket 
 const socket = new WebSocket('ws://localhost:8082');
@@ -40,6 +41,7 @@ socket.addEventListener('message', (event) => {
         scoreCounter = object.game_status.score;   
         level = object.game_status.level;  
         next_level = object.game_status.next_level;
+        reset_game = object.game_status.reset_game;
 })
 
 
@@ -350,6 +352,11 @@ function gameLoop() {
             //setTimeout(function(){
                 gameLoop();
             //},1000);
+        }
+
+        if(reset_game){
+            clearInterval(loop2);
+            game_loop();
         }
 
 
