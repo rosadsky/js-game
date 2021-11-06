@@ -17,36 +17,66 @@ var scoreCounter = 0;
 var level = 1;
 var next_level = false;
 var reset_game = false;
+var default_connection = true;
+var game_pin = 999;
 
 //FE websocket 
-const socket = new WebSocket('ws://localhost:8082');
+const web_socket = new WebSocket('ws://localhost:8082');
 
-socket.addEventListener('open', (event) => {
+web_socket.addEventListener('open', (event) => {
     console.log("Connected to the server side")
+
+
+    //web_socket.send(object)
 })
 
 // DOSTANEM MESSAGE
 var object = {}
 
-socket.addEventListener('message', (event) => {
+web_socket.addEventListener('message', (event) => {
         console.log("UPDATE")
+        
+
         object = JSON.parse(event.data);
+        console.log(object)
+
+
+        if(object.session == game_pin){
+            console.log("next connection")
+            speed = object.game_status.speed;
+            ship = object.game_status.ship;
+            direction = object.game_status.direction;
+            missiles = object.game_status.missiles;
+            aliens = object.game_status.aliens;
+            game_over = object.game_status.game_over;  
+            scoreCounter = object.game_status.score;   
+            level = object.game_status.level;  
+            next_level = object.game_status.next_level;
+            reset_game = object.game_status.reset_game;
+            
+        }
+
+
+
+        if (default_connection){
+            console.log("first connection");
+            default_connection = false;
+            game_pin = object.session;
+
+        }
+
         console.log(object);
-        speed = object.game_status.speed;
-        ship = object.game_status.ship;
-        direction = object.game_status.direction;
-        missiles = object.game_status.missiles;
-        aliens = object.game_status.aliens;
-        game_over = object.game_status.game_over;  
-        scoreCounter = object.game_status.score;   
-        level = object.game_status.level;  
-        next_level = object.game_status.next_level;
-        reset_game = object.game_status.reset_game;
+        
 })
 
 
 document.getElementById('start').addEventListener('click',function(){
-    fetch('/start-game').then(console.log("fetch to start game"));
+    
+
+    ///moves?move=${"right"}
+    fetch(`http://localhost:8080/start-game?pin=${game_pin}`, {
+        method: 'POST'
+    }).then(console.log("fetch to start game"));
     //gameLoop()
     if(!running) gameLoop();
 });
@@ -113,6 +143,11 @@ score.id = "score";
 var body = document.getElementsByTagName("body")[0];
 body.appendChild(score);
 
+var score = document.createElement("h2");
+score.innerHTML =  "Top Score: 0" ; 
+score.id = "top_score";
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(score);
 
 var score = document.createElement("h2");
 score.innerHTML =  "Aktualny level: " ; 
@@ -276,7 +311,7 @@ function loose() {
     var ctx = c.getContext("2d");
     var loose = document.getElementById("loose");
     var i=0;
-    console.log("loose")
+    //console.log("loose")
 
     for(i=0;i<121;i++) {
        x = rectangles[i].x;
@@ -327,22 +362,14 @@ function gameLoop() {
     document.addEventListener('keydown',checkKey);
     
     var loop2 = setInterval(function(){
-
+        console.log("looping")
+        
         drawSpace();
         drawAliens();
         drawMissiles();
         drawShip();
-
-        if(game_over) {
-            clearInterval(loop2);
-            missiles = [];
-            loose();
-            drawMissiles();
-            //running = false;
-            //game_over = false;
-            document.removeEventListener('keydown',checkKey);
-        }
-
+        
+        
         if(next_level){
             console.log("SOM V NEXT LEVEL")
             clearInterval(loop2);
@@ -360,8 +387,17 @@ function gameLoop() {
             setTimeout(function(){
                 gameLoop();
             },1000);
+            
         }
 
+        if(game_over) {
+            loose();
+            document.removeEventListener('keydown',checkKey);
+            if(reset_game) {
+                gameLoop()
+            }
+
+        }
 
         
         var score = document.getElementById("score");
@@ -370,18 +406,16 @@ function gameLoop() {
         var levelPrint = document.getElementById("level");
         levelPrint.innerHTML = "Aktualny level: " + level;
 
+        var levelPrint = document.getElementById("top_score");
+        levelPrint.innerHTML = "Top Score: " + top_score;
+
         
     },speed/2);
 
     
 
 }
-/*
-document.getElementById('start').addEventListener('keydown',function(e){
-    e.preventDefault();
-    e.stopPropagation();
-});
-*/
+
 document.getElementById('musicBtn').addEventListener('click', () =>{
     var audio = document.getElementById('music');
 
@@ -403,28 +437,6 @@ document.getElementById('resetBtn').addEventListener('click', () =>{
         })
 
 })
-/*
-function checkKey(e) {
-    e = e || window.event;
-    if (e.keyCode == '37' || e.keyCode == '71' ) {
-        if(ship[0] > 100) {
-            var i=0;
-            for(i=0;i<ship.length;i++) {
-                ship[i]--;
-            }
-        }
-    }
-    else if ((e.keyCode == '39' || e.keyCode == '74' )  && ship[0] < 108) {
-        var i=0;
-        for(i=0;i<ship.length;i++) {
-            ship[i]++;
-        }
-    }
-    else if (e.keyCode == '32') {
-        missiles.push(ship[0]-11);
-    }
-}
-*/
 
 function checkKey(e) {
     e = e || window.event;
@@ -432,25 +444,18 @@ function checkKey(e) {
         console.log("CLICKED")
         fetch(`http://localhost:8080/moves?move=${"left"}`, {
             method: 'POST'
-        }).catch(err => {
-            console.error(err)
-        })
-
+        }).then()
     }
     else if ((e.keyCode == '39' || e.keyCode == '74' )  && object.game_status.ship[0] < 108) {
         fetch(`http://localhost:8080/moves?move=${"right"}`, {
             method: 'POST'
-        }).catch(err => {
-            console.error(err)
-        })
+        }).then()
 
     }
     else if (e.keyCode == '32') {
         fetch(`http://localhost:8080/moves?move=${"fire"}`, {
             method: 'POST'
-        }).catch(err => {
-            console.error(err)
-        })
+        }).then()
         
     }
 }

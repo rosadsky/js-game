@@ -1,76 +1,73 @@
 
-// databaza budúcich userov i hope
 
 
 // toto prerobiť na to aby to bolo uložené per user ?? 
 
-var object
+var object_global
 var websocket_global
 
-const gameLoopMove = function gameLoopMove(websocket,user) {
 
+const gameLoopMove = function gameLoopMove(ws_socket,user,session) {
 
-    console.log("GAMELOOP - MOVE")
-
-    websocket_global = websocket;
+    console.log("GAMELOOP - MOVE fired")
     
-    
-    //document.addEventListener('keydown',checkKey);
-    object = user
+  
 
-    websocket.addEventListener('message', (event) => {
-        console.log("message from fe")
-        object = JSON.parse(event.data);
-        //console.log(object);         
-    })
+    //websocket_global = websocket;
     
-    object.game_status.next_level = false;
-
-    object.game_status.reset_game = false;
    
-    
 
-    
+    if(user.game_status != undefined){
+        user.game_status.next_level = false;
+        user.game_status.reset_game = false;
+    }
+     
     var a = 0;    
     var loop1 = setInterval(function(){
-
-      
-        console.log("game running..")
-        moveAliens();
-        moveMissiles();
-        checkCollisionsMA();
-        if(a%4==3) lowerAliens();
-        if(RaketaKolidujeSVotrelcom()) {
+        
+        
+        moveAliens(user);
+        moveMissiles(user);
+        checkCollisionsMA(user);
+        if(a%4==3) lowerAliens(user);
+        if(RaketaKolidujeSVotrelcom(user)) {
             console.log("colission")
-            object.game_status.game_over = true;
-            websocket.send(JSON.stringify(object))
+            user.game_status.game_over = true;
+            //websocket.send(JSON.stringify(object))
             clearInterval(loop1);
+            defaultValuesAfterLoose(object)
 
         }
-        if(object.game_status.aliens.length === 0) {
+        if(user.game_status.aliens.length === 0) {
             console.log("0 ALIENS WIN")
-            object.game_status.next_level = true;
+            user.game_status.next_level = true;
             clearInterval(loop1);   
-            object.game_status.missiles = [];
+            user.game_status.missiles = [];
             setTimeout(function(){
-                nextLevel();
+                nextLevel(user,websocket);
             },100);
         }
 
-        if(object.game_status.reset_game){
+        if(user.game_status.reset_game){
             console.log("CLEAR INTERVAL AFTER RESET")
             clearInterval(loop1);
         }
-        
+
+        //top score prepisovanie
+        if(user.game_status.score > user.top_score){
+            user.top_score = user.game_status.score;
+        }
+
+        console.log("SEND..on pin " + session)
+        ws_socket.send(JSON.stringify(user));
         a++;
-        websocket.send(JSON.stringify(object))
+        
     },user.game_status.speed);
 
-    //window.loop1 = loop1;
-    //window.loop2 = loop2;
+   
 }
 
-function checkCollisionsMA() {
+function checkCollisionsMA(object) {
     for(var i=0;i<object.game_status.missiles.length;i++) {
         if(object.game_status.aliens.includes(object.game_status.missiles[i])) {
             var alienIndex = object.game_status.aliens.indexOf(object.game_status.missiles[i]);
@@ -82,7 +79,7 @@ function checkCollisionsMA() {
     }
 }
 
-function RaketaKolidujeSVotrelcom() {
+function RaketaKolidujeSVotrelcom(object) {
     for(var i=0;i<object.game_status.aliens.length;i++) {
         if(object.game_status.aliens[i]>98) {
             return true;
@@ -91,7 +88,7 @@ function RaketaKolidujeSVotrelcom() {
     return false;
 }
 
-function moveMissiles() {
+function moveMissiles(object) {
     var i=0;
     for(i=0;i<object.game_status.missiles.length;i++) {
         object.game_status.missiles[i]-=11 ;
@@ -100,7 +97,18 @@ function moveMissiles() {
 }
 
 
-function moveAliens() {
+function defaultValuesAfterLoose(object){
+    object.game_status.aliens = [1,3,5,7,9,23,25,27,29,31];
+    object.game_status.missiles = [];
+    object.game_status.speed = 512;
+    object.game_status.ship = [104,114,115,116];
+    object.game_status.score = 0;
+    object.game_status.level = 1;
+    object.game_status.game_over = false;
+
+}
+
+function moveAliens(object) {
     var i=0;
     for(i=0;i<object.game_status.aliens.length;i++) {
         // TOTO POTREBUEJM POSIELAŤ NEJAK 
@@ -108,14 +116,14 @@ function moveAliens() {
     }
     object.game_status.direction *= -1;
 }
-function lowerAliens() {
+function lowerAliens(object) {
     var i=0;
     for(i=0;i<object.game_status.aliens.length;i++) {
         object.game_status.aliens[i]+=11;
     }
 }
 
-function nextLevel() {
+function nextLevel(object,websocket) {
     object.game_status.level++;
     console.log('level: '+ object.game_status.level);
     if(object.game_status.level==1) object.game_status.aliens = [1,3,5,7,9,23,25,27,29,31];
@@ -130,10 +138,10 @@ function nextLevel() {
 
     object.game_status.running = false;
     object.game_status.game_over = false;
-    gameLoopMove(websocket_global,object);
+    gameLoopMove(websocket,object);
 }
 
-var movesOn = function movesOn(move){
+var movesOn = function movesOn(object,move,websocket){
     console.log("move on func")
     console.log(typeof(move))
   
@@ -158,17 +166,16 @@ var movesOn = function movesOn(move){
             object.game_status.missiles.push(object.game_status.ship[0]-11);
             return true
     }
-    websocket_global.send(JSON.stringify(object))
+    //websocket.send(JSON.stringify(object))
     return false
     
 }
 
 
-var resetGame = function resetGame(){
+var resetGame = function resetGame(websocket){
 
     object.game_status.reset_game = true;
-    //clearInterval(window.loop1);
-    //clearInterval(window.loop1);
+
 
     console.log("restart level");
     object.game_status.aliens = [1,3,5,7,9,23,25,27,29,31];
@@ -184,4 +191,4 @@ var resetGame = function resetGame(){
     },999);
 }
 
-module.exports = { gameLoopMove, movesOn, resetGame }
+module.exports = { gameLoopMove, movesOn, resetGame}
