@@ -166,7 +166,7 @@ var movesOn = function movesOn(object,move,websocket){
             object.game_status.missiles.push(object.game_status.ship[0]-11);
             return true
     }
-    //websocket.send(JSON.stringify(object))
+    websocket.send(JSON.stringify(object))
     return false
     
 }
