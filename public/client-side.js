@@ -65,7 +65,7 @@ web_socket.addEventListener('message', (event) => {
 
         }
 
-        console.log(object);
+        //console.log(object);
         
 })
 
@@ -430,7 +430,7 @@ document.getElementById('musicBtn').addEventListener('click', () =>{
 
 document.getElementById('resetBtn').addEventListener('click', () =>{
 
-    fetch(`http://localhost:8080/reset-game`, {
+    fetch(`http://localhost:8080/reset-game?pin=${game_pin}`, {
             method: 'POST'
         }).catch(err => {
             console.error(err)
@@ -442,18 +442,18 @@ function checkKey(e) {
     e = e || window.event;
     if (e.keyCode == '37' || e.keyCode == '71' ) {
         console.log("CLICKED")
-        fetch(`http://localhost:8080/moves?move=${"left"}`, {
+        fetch(`http://localhost:8080/moves?move=${"left"}&pin=${game_pin}`, {
             method: 'POST'
         }).then()
     }
     else if ((e.keyCode == '39' || e.keyCode == '74' )  && object.game_status.ship[0] < 108) {
-        fetch(`http://localhost:8080/moves?move=${"right"}`, {
+        fetch(`http://localhost:8080/moves?move=${"right"}&pin=${game_pin}`, {
             method: 'POST'
         }).then()
 
     }
     else if (e.keyCode == '32') {
-        fetch(`http://localhost:8080/moves?move=${"fire"}`, {
+        fetch(`http://localhost:8080/moves?move=${"fire"}&pin=${game_pin}`, {
             method: 'POST'
         }).then()
         

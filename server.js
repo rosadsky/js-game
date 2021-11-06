@@ -90,16 +90,17 @@ app.post("/start-game", (req, res) =>{
 
 app.post("/reset-game", (req, res) =>{
     console.log("get request to reset game")
+    console.log(req.query.pin)
     //console.log(websocket)
-    if (serverSide.resetGame(websocket)){
+    if (serverSide.resetGame(web_sockets[req.query.pin],users[req.query.pin])){
         res.status("200").send("ok").end();
     }
 })
 
 app.post('/moves', (req,res) => {
     console.log("MOVES FIRED POST")
-    console.log(req.query.move)
-    if(serverSide.movesOn(req.query.move.toString()),websocket){
+    console.log(req.query.pin)
+    if(serverSide.movesOn(users[req.query.pin],req.query.move.toString())){
         res.status("200").send("ok").end()
     }
     //serverSide.movesOn(req.query.move,user )

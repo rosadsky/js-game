@@ -35,7 +35,7 @@ const gameLoopMove = function gameLoopMove(ws_socket,user,session) {
             user.game_status.game_over = true;
             //websocket.send(JSON.stringify(object))
             clearInterval(loop1);
-            defaultValuesAfterLoose(object)
+            defaultValuesAfterLoose(user)
 
         }
         if(user.game_status.aliens.length === 0) {
@@ -44,7 +44,7 @@ const gameLoopMove = function gameLoopMove(ws_socket,user,session) {
             clearInterval(loop1);   
             user.game_status.missiles = [];
             setTimeout(function(){
-                nextLevel(user,websocket);
+                nextLevel(user,ws_socket,session);
             },100);
         }
 
@@ -123,7 +123,7 @@ function lowerAliens(object) {
     }
 }
 
-function nextLevel(object,websocket) {
+function nextLevel(object,websocket,session) {
     object.game_status.level++;
     console.log('level: '+ object.game_status.level);
     if(object.game_status.level==1) object.game_status.aliens = [1,3,5,7,9,23,25,27,29,31];
@@ -138,7 +138,7 @@ function nextLevel(object,websocket) {
 
     object.game_status.running = false;
     object.game_status.game_over = false;
-    gameLoopMove(websocket,object);
+    gameLoopMove(websocket,object,session);
 }
 
 var movesOn = function movesOn(object,move,websocket){
@@ -172,7 +172,10 @@ var movesOn = function movesOn(object,move,websocket){
 }
 
 
-var resetGame = function resetGame(websocket){
+var resetGame = function resetGame(websocket,object){
+
+
+    console.log(object);
 
     object.game_status.reset_game = true;
 
@@ -187,8 +190,10 @@ var resetGame = function resetGame(websocket){
     //window.scoreCounter = 0;
     //document.getElementById('score').innerHTML = "Score: " +scoreCounter;
     setTimeout(function(){
-        gameLoopMove(websocket_global,object);
+        gameLoopMove(websocket,object);
     },999);
+
+    return true;
 }
 
 module.exports = { gameLoopMove, movesOn, resetGame}
