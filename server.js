@@ -25,7 +25,7 @@ let user = [{
         nick: 'player1',
         password: '123',
         game_status: {
-            speed: 1000,
+            speed: 512,
             ship: [104,114,115,116],
             direction: 1,
             missiles: [],

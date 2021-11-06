@@ -349,14 +349,17 @@ function gameLoop() {
             document.removeEventListener('keydown',checkKey);
             drawMissiles();
             win();
-            //setTimeout(function(){
+            setTimeout(function(){
                 gameLoop();
-            //},1000);
+            },1000);
         }
 
         if(reset_game){
+            console.log("clear interval frontend")
             clearInterval(loop2);
-            game_loop();
+            setTimeout(function(){
+                gameLoop();
+            },1000);
         }
 
 

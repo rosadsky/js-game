@@ -25,8 +25,12 @@ const gameLoopMove = function gameLoopMove(websocket,user) {
     })
     
     object.game_status.next_level = false;
-    object.game_status.reset_game = false;
 
+    object.game_status.reset_game = false;
+   
+    
+
+    
     var a = 0;    
     var loop1 = setInterval(function(){
 
@@ -57,12 +61,8 @@ const gameLoopMove = function gameLoopMove(websocket,user) {
             console.log("CLEAR INTERVAL AFTER RESET")
             clearInterval(loop1);
         }
-
-
-
-
+        
         a++;
-
         websocket.send(JSON.stringify(object))
     },user.game_status.speed);
 
@@ -166,7 +166,7 @@ var movesOn = function movesOn(move){
 
 var resetGame = function resetGame(){
 
-    object.game_status.resetGame = true;
+    object.game_status.reset_game = true;
     //clearInterval(window.loop1);
     //clearInterval(window.loop1);
 
@@ -181,7 +181,7 @@ var resetGame = function resetGame(){
     //document.getElementById('score').innerHTML = "Score: " +scoreCounter;
     setTimeout(function(){
         gameLoopMove(websocket_global,object);
-    },100);
+    },999);
 }
 
 module.exports = { gameLoopMove, movesOn, resetGame }
