@@ -210,7 +210,6 @@ body.appendChild(score);
 
 
 var element = document.createElement("input");
-//score.innerHTML =  "Aktualny level: " ; 
 element.type = "text";
 element.placeholder = "Enter nickname"
 element.id = "nickname-register";
@@ -219,17 +218,46 @@ var body = document.getElementsByTagName("body")[0];
 body.appendChild(element);
 
 var element = document.createElement("input");
-//score.innerHTML =  "Aktualny level: " ; 
-element.type = "password-register";
+element.type = "password";
 element.placeholder = "Enter password"
 element.id = "password-register";
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(element);
+
+var element = document.createElement("input");
+element.type = "password";
+element.placeholder = "Enter password"
+element.id = "password-2-register";
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(element);
+
+var element = document.createElement("input");
+element.type = "email";
+element.placeholder = "Enter email"
+element.id = "email-register";
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(element);
+
+var element = document.createElement("input");
+element.type = "text";
+element.placeholder = "Enter First name";
+element.id = "firstname-register";
+element.name = "lastname-register";
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(element);
+
+var element = document.createElement("input");
+element.type = "text";
+element.placeholder = "Enter Lastname";
+element.id = "lastname-register";
+element.name = "lastname-register";
 var body = document.getElementsByTagName("body")[0];
 body.appendChild(element);
 
 var button = document.createElement("button");
 button.innerHTML = "REGISTER";
 button.id = "registerBtn";
-button.type = "submit-register";
+button.type = "submit";
 var body = document.getElementsByTagName("body")[0];
 body.appendChild(button);
 
@@ -535,14 +563,18 @@ document.getElementById('registerBtn').addEventListener('click', () =>{
 
     var nickname = document.getElementById("nickname-register").value;
     var password = document.getElementById("password-register").value;
+    var password2 = document.getElementById("password-2-register").value;
+    var firstname = document.getElementById("firstname-register").value;
+    var lastname = document.getElementById("lastname-register").value;
+
     console.log("LOGIN NICKNAME: " + nickname)
     console.log("PASSWORD: " + password)
 
-    /*fetch(`http://localhost:8080/login?nickname=${game_pin}`, {
+    fetch(`http://localhost:8080/register?pin=${game_pin}&nickname=${nickname}&password=${password}&password2=${password2}&firstname=${firstname}&lastname=${lastname}`, {
             method: 'POST'
         }).catch(err => {
             console.error(err)
-        })*/
+        })
 
 })
 

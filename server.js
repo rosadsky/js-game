@@ -22,6 +22,7 @@ class user{
         this.socket = socket
         this.nickname = "anonym"
         this.password = ""
+        this.logged = false
     }
 }
 
@@ -38,9 +39,20 @@ let websocket;
 let web_sockets = [ ]
 const users = {}
 const WebSocket = require('ws');
-let users_db = require('./userdb.json')
+let users_db = require('./userdb.json');
+bcrypt = require('bcrypt');
 
 const wsServer = new WebSocket.Server({port: '8082'})
+
+fs.readFile("./userdb.json", "utf8", (err, jsonString) => {
+    if (err) {
+      console.log("File read failed:", err);
+      return;
+    }
+    console.log("File data:", jsonString);
+
+    users_db = JSON.parse(jsonString);
+  });
 
 app.use(express.static('public'))
 
@@ -120,7 +132,7 @@ app.post('/login', (req,res) => {
     let game_pin = req.query.pin;
     let nickname = req.query.nickname;
     let password = req.query.password;
-
+    let tmp_object = null;
     console.log(game_pin)
     console.log(nickname)
     console.log(password)
@@ -130,10 +142,21 @@ app.post('/login', (req,res) => {
     users[game_pin].nickname = nickname
     users[game_pin].password = password
 
-    console.log(users[game_pin])
+    //console.log(users[game_pin])
+    console.log(users_db)
     
     if (serverSide.loginUser(users[game_pin])) {
         res.status("200").send("succesfuly logged!").end()
+        console.log(tmp_object)
+        for( let i = 0 ; i < users_db.length; i++){
+            if(users_db[i].nickname == users[game_pin].nickname){
+                console.log("prepis values")
+                //users[game_pin].game_status = users_db[i].game_status;
+                users[game_pin].game_status.level = users_db[i].game_status.level;
+                users[game_pin].game_status.top_score = users_db[i].game_status.top_score;
+                break;
+            }
+        }
     } else {
         console.log("WRONG PASSWORD")
     }
@@ -142,7 +165,92 @@ app.post('/login', (req,res) => {
 })
 
 
+app.post('/register', (req, res)=> {
+    var game_pin = req.query.pin;
+    var nickname = req.query.nickname;
+    var password =  req.query.password;
+    var password2 = req.query.password2;
+    var firstname = req.query.firstname;
+    var lastname = req.query.lastname;
+    
+    console.log(game_pin)
+    console.log(nickname)
+    console.log(password)
+    console.log(password2)
+    console.log(firstname)
+    console.log(lastname)
+
+    let tmp_hash = "";
+
+    if (registerUser(nickname,password,password2,firstname,lastname,game_pin)){
+        res.status("200").send("ok").end()
+    }
+
+    console.log("HASH TMP")
+    console.log(tmp_hash)
+
+
+})
+
+
 
 app.listen(port, () => {
     console.log(`Listening at http://localhost:${port}`)
   })
+
+setInterval(function(){ 
+    console.log("update db")
+    jsonReader("./userdb.json", (err, customers) => {
+        if (err) {
+          console.log("Error reading file:", err);
+          return;
+        }
+        // increase customer order count by 1
+        fs.writeFile("./userdb.json", JSON.stringify(users_db), err => {
+          if (err) console.log("Error writing file:", err);
+        });
+      });
+
+
+}, 1000);
+ 
+
+async function registerUser(nickname,password,password2,firstname,lastname,game_pin) {
+   
+    let hash_password = null;
+
+    if(password != password2){
+        return false;
+    }
+
+    hash_password = await bcrypt.hash(password,10);
+    
+
+    users[game_pin].nickname = nickname;
+    users[game_pin].password = hash_password;
+    users[game_pin].name = firstname + " " +lastname;
+    
+    store_obj = users[game_pin];
+    store_obj.socket = "";    
+    users_db.push(store_obj);
+
+   
+    return true;
+
+    
+
+}
+
+function jsonReader(filePath, cb) {
+    fs.readFile(filePath, (err, fileData) => {
+      if (err) {
+        return cb && cb(err);
+      }
+      try {
+        const object = JSON.parse(fileData);
+        return cb && cb(null, object);
+      } catch (err) {
+        return cb && cb(err);
+      }
+    });
+  }

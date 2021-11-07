@@ -209,8 +209,8 @@ var loginUser = async function loginUser(user){
     
         //console.log(users_db[user.nickname.stringify()])
     
-    
-    for(let i = 0; i < users_db.length; i++){
+    let i = 0;
+    for( i ; i < users_db.length; i++){
         if(users_db[i].nickname == user.nickname){
             console.log("som in")
             //hash_password = user.nickname;
@@ -228,10 +228,15 @@ var loginUser = async function loginUser(user){
     const isMatch = await bcrypt.compare(user.password,hash_password);
 
     console.log(isMatch);
+    if(isMatch){
+        user = users_db[i]
+    }
+    //console.log(user)
 
-
-    return isMatch;
+    return true;
 }
+
+
 
 
 module.exports = { gameLoopMove, movesOn, resetGame, loginUser}
