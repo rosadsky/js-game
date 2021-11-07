@@ -51,7 +51,7 @@ fs.readFile("./userdb.json", "utf8", (err, jsonString) => {
       console.log("File read failed:", err);
       return;
     }
-    console.log("File data:", jsonString);
+    //console.log("File data:", jsonString);
 
     users_db = JSON.parse(jsonString);
   });
@@ -150,19 +150,28 @@ app.post('/login', (req,res) => {
     
     if (serverSide.loginUser(users[game_pin])) {
         res.status("200").send("succesfuly logged!").end()
-        console.log(tmp_object)
+        //console.log(tmp_object)
         for( let i = 0 ; i < users_db.length; i++){
             if(users_db[i].nickname == users[game_pin].nickname){
                 console.log("prepis values")
                 //users[game_pin].game_status = users_db[i].game_status;
                 users[game_pin].game_status.level = users_db[i].game_status.level;
                 users[game_pin].game_status.top_score = users_db[i].game_status.top_score;
+                users[game_pin].session = game_pin;
+                users[game_pin].email = users_db[i].game_status.email;
                 break;
             }
         }
+        
+        if(users[game_pin].nickname== "admin"){
+            serverSide.adminPrinter(users[game_pin].socket);
+        }
+
+
     } else {
         console.log("WRONG PASSWORD")
     }
+    
     
     //serverSide.movesOn(req.query.move,user )
 })
@@ -206,14 +215,17 @@ app.listen(port, () => {
   })
 
 setInterval(function(){ 
+
+    
+
     console.log("update db")
     jsonReader("./userdb.json", (err, customers) => {
         if (err) {
           console.log("Error reading file:", err);
           return;
         }
-        // increase customer order count by 1
-        fs.writeFile("./userdb.json", JSON.stringify(users_db), err => {
+        
+        fs.writeFile("./userdb.json", JSON.stringify(users), err => {
           if (err) console.log("Error writing file:", err);
         });
       });
@@ -225,6 +237,7 @@ setInterval(function(){
 async function registerUser(nickname,password,password2,firstname,lastname,game_pin,email) {
    
     let hash_password = null;
+    let saltRounds = 10;
 
     if(password != password2){
         console.log("password not matching")
@@ -240,10 +253,10 @@ async function registerUser(nickname,password,password2,firstname,lastname,game_
         return false;
     }
 
-    hash_password = await bcrypt.hash(password,10);
-    
-    
+    hash_password = await bcrypt.hash(password,saltRounds);
 
+    console.log("HASH PASSOWRD: " + hash_password);
+    
     users[game_pin].nickname = nickname;
     users[game_pin].password = hash_password;
     users[game_pin].email = email.toLowerCase();
