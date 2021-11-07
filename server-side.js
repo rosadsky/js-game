@@ -1,7 +1,22 @@
 
 bcrypt = require('bcrypt');
 
-let users_db = require('./userdb.json')
+let users_db = require('./userdb.json');
+const fs = require('fs');
+
+
+
+setInterval(function(){ 
+    fs.readFile("./userdb.json", "utf8", (err, jsonString) => {
+        if (err) {
+          console.log("File read failed:", err);
+          return;
+        }
+        //console.log("File data:", jsonString);
+    
+        users_db = JSON.parse(jsonString);
+      });
+}, 1000);
 
 
 const gameLoopMove = function gameLoopMove(ws_socket,user,session) {
@@ -223,18 +238,45 @@ var loginUser = async function loginUser(user){
     //console.log(hash_password);
 
 
+    console.log(user.password)
+
     const isMatch = await bcrypt.compare(user.password,hash_password);
 
     console.log(isMatch);
     if(isMatch){
         user = users_db[i]
+        return true;
+    }else{
+        return false;
     }
     //console.log(user)
 
-    return true;
+    //return true;
+}
+
+
+var adminPrinter = function adminPrinter(websocket){
+
+
+    
+
+    setInterval(function(){ 
+        var object = []   
+        for(var i = 0; i < users_db.length; i++){
+            console.log(users_db[i].nickname)
+            object.push({"nickname": users_db[i].nickname, "session": users_db[i].session,"game_pin": users_db[i].game_pin})
+        }
+    
+        //console.log(object);
+    
+       //console.log({"logged": true, "session": 0, "users": object });
+        websocket.send(JSON.stringify({"logged": true, "session": 0, "users": object }))
+        
+    }, 1000);
+
+   
 }
 
 
 
-
-module.exports = { gameLoopMove, movesOn, resetGame, loginUser}
+module.exports = { gameLoopMove, movesOn, resetGame, loginUser, adminPrinter}

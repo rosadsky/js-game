@@ -21,6 +21,8 @@ var default_connection = true;
 var game_pin = 999;
 var top_score = 0;
 var nickname = "jozo";
+var admin_panel = null;
+var first_session = true;
 
 //FE websocket 
 const web_socket = new WebSocket('ws://localhost:8082');
@@ -42,8 +44,14 @@ web_socket.addEventListener('message', (event) => {
         object = JSON.parse(event.data);
         console.log(object)
 
+        
+        if(object.logged == true){
+            //console.log(object)
+            admin_panel = object.users;
+            drawAdminPanel()
 
-        if(object.session == game_pin){
+        }
+        else if(object.session == game_pin){
             console.log("next connection")
             speed = object.game_status.speed;
             ship = object.game_status.ship;
@@ -522,6 +530,38 @@ function gameLoop() {
 
     
 
+}
+
+function drawAdminPanel(){
+
+    if(first_session == false){
+        caseRemoveH2 = document.querySelectorAll("h3");
+
+        for(var j = 0; j < caseRemoveH2.length; j++){
+            caseRemoveH2[j].remove();
+        }
+    }
+
+    
+    
+
+    for(let i = 0; i < admin_panel.length; i++){
+        console.log(admin_panel[i].nickname);
+
+        var adminname = document.createElement("h3");
+        adminname.innerHTML =  "Nickname: " + admin_panel[i].nickname + " | session: " + admin_panel[i].session + "| game_pin: " + admin_panel[i].game_pin ; 
+        adminname.id = "nickname-admin";
+        var body = document.getElementsByTagName("body")[0];
+        body.appendChild(adminname);   
+        //adminname.remove()
+        first_session = false;
+    }
+
+   
+
+
+
+    
 }
 
 document.getElementById('musicBtn').addEventListener('click', () =>{
