@@ -194,9 +194,7 @@ var resetGame = function resetGame(websocket,object){
 }
 
 
-var getProperty = function (propertyName,obj) {
-    return obj[propertyName];
-};
+
 
 var loginUser = async function loginUser(user){
 

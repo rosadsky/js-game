@@ -243,6 +243,7 @@ element.type = "text";
 element.placeholder = "Enter First name";
 element.id = "firstname-register";
 element.name = "lastname-register";
+element.minlength = "2"
 var body = document.getElementsByTagName("body")[0];
 body.appendChild(element);
 
@@ -251,6 +252,7 @@ element.type = "text";
 element.placeholder = "Enter Lastname";
 element.id = "lastname-register";
 element.name = "lastname-register";
+element.minlength = "2"
 var body = document.getElementsByTagName("body")[0];
 body.appendChild(element);
 
@@ -566,11 +568,12 @@ document.getElementById('registerBtn').addEventListener('click', () =>{
     var password2 = document.getElementById("password-2-register").value;
     var firstname = document.getElementById("firstname-register").value;
     var lastname = document.getElementById("lastname-register").value;
+    var email = document.getElementById("email-register").value;
 
     console.log("LOGIN NICKNAME: " + nickname)
     console.log("PASSWORD: " + password)
 
-    fetch(`http://localhost:8080/register?pin=${game_pin}&nickname=${nickname}&password=${password}&password2=${password2}&firstname=${firstname}&lastname=${lastname}`, {
+    fetch(`http://localhost:8080/register?pin=${game_pin}&nickname=${nickname}&password=${password}&password2=${password2}&firstname=${firstname}&lastname=${lastname}&email=${email}`, {
             method: 'POST'
         }).catch(err => {
             console.error(err)

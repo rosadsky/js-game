@@ -20,6 +20,8 @@ class user{
         this.session = session
         this.game_status = new gameStatus()
         this.socket = socket
+        this.game_pin = "";
+        this.email = "N/A"
         this.nickname = "anonym"
         this.password = ""
         this.logged = false
@@ -101,6 +103,7 @@ app.post("/start-game", (req, res) =>{
     console.log(game_pin)
     console.log("get request start to start game ")
     //console.log(web_sockets.length)
+    users[game_pin].game_pin = String(game_pin).padStart(4,"0")
     
     serverSide.gameLoopMove(web_sockets[game_pin],users[game_pin],game_pin);
 
@@ -172,6 +175,7 @@ app.post('/register', (req, res)=> {
     var password2 = req.query.password2;
     var firstname = req.query.firstname;
     var lastname = req.query.lastname;
+    var email = req.query.email;
     
     console.log(game_pin)
     console.log(nickname)
@@ -182,8 +186,11 @@ app.post('/register', (req, res)=> {
 
     let tmp_hash = "";
 
-    if (registerUser(nickname,password,password2,firstname,lastname,game_pin)){
+    if (registerUser(nickname,password,password2,firstname,lastname,game_pin,email)){
         res.status("200").send("ok").end()
+    } else {
+        console.log("Entering wrong values try again")
+        res.status("500").send("Something went wrong try again.").end();
     }
 
     console.log("HASH TMP")
@@ -215,20 +222,32 @@ setInterval(function(){
 }, 1000);
  
 
-async function registerUser(nickname,password,password2,firstname,lastname,game_pin) {
+async function registerUser(nickname,password,password2,firstname,lastname,game_pin,email) {
    
     let hash_password = null;
 
     if(password != password2){
+        console.log("password not matching")
+        return false;
+    } else if (firstname.length < 2){
+        console.log("first name must me more than 2 characters")
+        return false;
+    } else if (lastname.length < 2){
+        console.log("last name must me more than 2 characters")
+        return false;
+    } else if (validateEmail(email) == false){
+        console.log("wrong email")
         return false;
     }
 
     hash_password = await bcrypt.hash(password,10);
     
+    
 
     users[game_pin].nickname = nickname;
     users[game_pin].password = hash_password;
-    users[game_pin].name = firstname + " " +lastname;
+    users[game_pin].email = email.toLowerCase();
+    users[game_pin].name = capitalizeFirstLetter(firstname.toLowerCase()) + " " + capitalizeFirstLetter(lastname.toLowerCase());
     
     store_obj = users[game_pin];
     store_obj.socket = "";    
@@ -239,6 +258,14 @@ async function registerUser(nickname,password,password2,firstname,lastname,game_
 
     
 
+}
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+  function validateEmail(email) {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
 }
 
 function jsonReader(filePath, cb) {
