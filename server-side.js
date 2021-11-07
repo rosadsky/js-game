@@ -1,12 +1,5 @@
 
 
-
-// toto prerobiť na to aby to bolo uložené per user ?? 
-
-var object_global
-var websocket_global
-
-
 const gameLoopMove = function gameLoopMove(ws_socket,user,session) {
 
     console.log("GAMELOOP - MOVE fired")
@@ -54,8 +47,8 @@ const gameLoopMove = function gameLoopMove(ws_socket,user,session) {
         }
 
         //top score prepisovanie
-        if(user.game_status.score > user.top_score){
-            user.top_score = user.game_status.score;
+        if(user.game_status.score > user.game_status.top_score){
+            user.game_status.top_score = user.game_status.score;
         }
 
         console.log("SEND..on pin " + session)

@@ -19,6 +19,7 @@ var next_level = false;
 var reset_game = false;
 var default_connection = true;
 var game_pin = 999;
+var top_score = 0;
 
 //FE websocket 
 const web_socket = new WebSocket('ws://localhost:8082');
@@ -53,6 +54,7 @@ web_socket.addEventListener('message', (event) => {
             level = object.game_status.level;  
             next_level = object.game_status.next_level;
             reset_game = object.game_status.reset_game;
+            top_score = object.game_status.top_score
             
         }
 
@@ -137,6 +139,24 @@ button.id = "resetBtn";
 var body = document.getElementsByTagName("body")[0];
 body.appendChild(button);
 
+var button = document.createElement("button");
+button.innerHTML = "LEFT";
+button.id = "leftBtn";
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(button);
+
+var button = document.createElement("button");
+button.innerHTML = "RIGHT";
+button.id = "rightBtn";
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(button);
+
+var button = document.createElement("button");
+button.innerHTML = "FIRE";
+button.id = "fireBtn";
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(button);
+
 var score = document.createElement("h2");
 score.innerHTML =  "Score: 0" ; 
 score.id = "score";
@@ -154,6 +174,27 @@ score.innerHTML =  "Aktualny level: " ;
 score.id = "level";
 var body = document.getElementsByTagName("body")[0];
 body.appendChild(score);
+
+var element = document.createElement("input");
+//score.innerHTML =  "Aktualny level: " ; 
+element.type = "text";
+element.placeholder = "Enter nickname"
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(element);
+
+var element = document.createElement("input");
+//score.innerHTML =  "Aktualny level: " ; 
+element.type = "password";
+element.placeholder = "Enter password"
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(element);
+
+var button = document.createElement("button");
+button.innerHTML = "LOGIN";
+button.id = "loginBtn";
+button.type = "submit";
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(button);
 
 
 

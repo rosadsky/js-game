@@ -10,6 +10,7 @@ class gameStatus{
         this.next_level= false
         this.reset_game= false
         this.score = 0
+        this.top_score = 0
         this.level = 1
     }
 }
@@ -57,7 +58,7 @@ wsServer.on('connection', (socket) => {
     users[session] = new user(session,socket)
     payload = JSON.stringify({"game_status":users[session]["game_status"],"session":users[session]["session"]})
 
-    console.log(JSON.parse(payload))
+    //console.log(JSON.parse(payload))
 
     web_sockets[session] = socket;
     socket.send(payload);   
@@ -78,11 +79,13 @@ app.get("/",(req, res) => {
 })
 
 app.post("/start-game", (req, res) =>{
-    //let game_pin = Number(req.query.pin)
-    //console.log("GAME PIN: " + game_pin)
+    let game_pin = Number(req.query.pin)
+    console.log("GAME PIN: " + game_pin)
+    console.log(game_pin)
     console.log("get request start to start game ")
-    console.log(web_sockets.length)
-    serverSide.gameLoopMove(web_sockets[session],users[session],session);
+    //console.log(web_sockets.length)
+    
+    serverSide.gameLoopMove(web_sockets[game_pin],users[game_pin],game_pin);
 
     //console.log(user[playerCounter]);
     //playerCounter++;
