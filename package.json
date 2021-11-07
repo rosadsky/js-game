@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/rosadsky/js-game#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "express": "^4.17.1",
     "node-fetch": "^3.0.0",
     "ws": "^8.2.3"

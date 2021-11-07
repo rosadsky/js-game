@@ -1,0 +1,38 @@
+[{
+    "nickname": "player1",
+    "password": "$2b$10$Ug5WqWwknhYtpF5.AQdnOux.WmBkHanDwiyK9A/mi9wzFCET7HeWK",
+    "session": 0,
+    "socket": 0,
+    "game_status": {
+        "speed": 1000,
+        "ship": [104,114,115,116],
+        "direction": 1,
+        "missiles": [],
+        "aliens" : [1,3,5,7,9,23,25,27,29,31],
+        "game_over": false,
+        "next_level": false,
+        "reset_game": false,
+        "score": 0,
+        "top_score": 10,
+        "level": 1
+    }
+},
+{
+    "nickname": "player2",
+    "password": "$2b$10$Ug5WqWwknhYtpF5.AQdnOux.WmBkHanDwiyK9A/mi9wzFCET7HeWK",
+    "session": 0,
+    "socket": 0,
+    "game_status": {
+        "speed": 1000,
+        "ship": [104,114,115,116],
+        "direction": 1,
+        "missiles": [],
+        "aliens" : [1,3,5,7,9,23,25,27,29,31],
+        "game_over": false,
+        "next_level": false,
+        "reset_game": false,
+        "score": 0,
+        "top_score": 10,
+        "level": 1
+    }
+}]

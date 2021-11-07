@@ -20,6 +20,8 @@ class user{
         this.session = session
         this.game_status = new gameStatus()
         this.socket = socket
+        this.nickname = "anonym"
+        this.password = ""
     }
 }
 
@@ -36,6 +38,7 @@ let websocket;
 let web_sockets = [ ]
 const users = {}
 const WebSocket = require('ws');
+let users_db = require('./userdb.json')
 
 const wsServer = new WebSocket.Server({port: '8082'})
 
@@ -75,6 +78,8 @@ app.get("/",(req, res) => {
     console.log("STARTED");
     res.setHeader("Content-Type", "text/html");
     res.sendFile(__dirname + '/index.html')
+
+    console.log(users_db)
    
 })
 
@@ -106,6 +111,33 @@ app.post('/moves', (req,res) => {
     if(serverSide.movesOn(users[req.query.pin],req.query.move.toString())){
         res.status("200").send("ok").end()
     }
+    //serverSide.movesOn(req.query.move,user )
+})
+
+app.post('/login', (req,res) => {
+    console.log("loginn");
+
+    let game_pin = req.query.pin;
+    let nickname = req.query.nickname;
+    let password = req.query.password;
+
+    console.log(game_pin)
+    console.log(nickname)
+    console.log(password)
+    
+    //console.log(users);
+
+    users[game_pin].nickname = nickname
+    users[game_pin].password = password
+
+    console.log(users[game_pin])
+    
+    if (serverSide.loginUser(users[game_pin])) {
+        res.status("200").send("succesfuly logged!").end()
+    } else {
+        console.log("WRONG PASSWORD")
+    }
+    
     //serverSide.movesOn(req.query.move,user )
 })
 

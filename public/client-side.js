@@ -20,6 +20,7 @@ var reset_game = false;
 var default_connection = true;
 var game_pin = 999;
 var top_score = 0;
+var nickname = "jozo";
 
 //FE websocket 
 const web_socket = new WebSocket('ws://localhost:8082');
@@ -175,10 +176,13 @@ score.id = "level";
 var body = document.getElementsByTagName("body")[0];
 body.appendChild(score);
 
+//login 
 var element = document.createElement("input");
 //score.innerHTML =  "Aktualny level: " ; 
 element.type = "text";
 element.placeholder = "Enter nickname"
+element.id = "nickname";
+element.name = "nickname";
 var body = document.getElementsByTagName("body")[0];
 body.appendChild(element);
 
@@ -186,6 +190,7 @@ var element = document.createElement("input");
 //score.innerHTML =  "Aktualny level: " ; 
 element.type = "password";
 element.placeholder = "Enter password"
+element.id = "password";
 var body = document.getElementsByTagName("body")[0];
 body.appendChild(element);
 
@@ -193,6 +198,38 @@ var button = document.createElement("button");
 button.innerHTML = "LOGIN";
 button.id = "loginBtn";
 button.type = "submit";
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(button);
+
+
+//register 
+
+var score = document.createElement("br");
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(score);
+
+
+var element = document.createElement("input");
+//score.innerHTML =  "Aktualny level: " ; 
+element.type = "text";
+element.placeholder = "Enter nickname"
+element.id = "nickname-register";
+element.name = "nickname-register";
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(element);
+
+var element = document.createElement("input");
+//score.innerHTML =  "Aktualny level: " ; 
+element.type = "password-register";
+element.placeholder = "Enter password"
+element.id = "password-register";
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(element);
+
+var button = document.createElement("button");
+button.innerHTML = "REGISTER";
+button.id = "registerBtn";
+button.type = "submit-register";
 var body = document.getElementsByTagName("body")[0];
 body.appendChild(button);
 
@@ -478,6 +515,37 @@ document.getElementById('resetBtn').addEventListener('click', () =>{
         })
 
 })
+
+document.getElementById('loginBtn').addEventListener('click', () =>{
+
+    var nickname = document.getElementById("nickname").value;
+    var password = document.getElementById("password").value;
+    console.log("LOGIN NICKNAME: " + nickname)
+    console.log("PASSWORD: " + password)
+//?nickname=${game_pin}`
+    fetch(`http://localhost:8080/login?pin=${game_pin}&nickname=${nickname}&password=${password}`, {
+            method: 'POST'
+        }).catch(err => {
+            console.error(err)
+        })
+
+})
+
+document.getElementById('registerBtn').addEventListener('click', () =>{
+
+    var nickname = document.getElementById("nickname-register").value;
+    var password = document.getElementById("password-register").value;
+    console.log("LOGIN NICKNAME: " + nickname)
+    console.log("PASSWORD: " + password)
+
+    /*fetch(`http://localhost:8080/login?nickname=${game_pin}`, {
+            method: 'POST'
+        }).catch(err => {
+            console.error(err)
+        })*/
+
+})
+
 
 function checkKey(e) {
     e = e || window.event;

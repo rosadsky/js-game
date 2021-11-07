@@ -1,4 +1,8 @@
 
+bcrypt = require('bcrypt');
+
+let users_db = require('./userdb.json')
+
 
 const gameLoopMove = function gameLoopMove(ws_socket,user,session) {
 
@@ -189,4 +193,45 @@ var resetGame = function resetGame(websocket,object){
     return true;
 }
 
-module.exports = { gameLoopMove, movesOn, resetGame}
+
+var getProperty = function (propertyName,obj) {
+    return obj[propertyName];
+};
+
+var loginUser = async function loginUser(user){
+
+    let hash_password = ""
+    hash_number = 10;
+    const originalPassword = "password";
+    const password = "password";
+    console.log("loginuser")
+    //console.log(users_db)
+    
+        //console.log(users_db[user.nickname.stringify()])
+    
+    
+    for(let i = 0; i < users_db.length; i++){
+        if(users_db[i].nickname == user.nickname){
+            console.log("som in")
+            //hash_password = user.nickname;
+            hash_password = users_db[i].password;
+            break;
+        }
+    }
+
+    //register
+    //const hash_password = await bcrypt.hash(originalPassword,hash_number);
+    //store to DB
+    //console.log(hash_password);
+
+
+    const isMatch = await bcrypt.compare(user.password,hash_password);
+
+    console.log(isMatch);
+
+
+    return isMatch;
+}
+
+
+module.exports = { gameLoopMove, movesOn, resetGame, loginUser}
